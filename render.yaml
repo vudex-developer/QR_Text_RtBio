@@ -1,16 +1,15 @@
 services:
   - type: web
     name: rtbio-survey-app
-    env: node
+    runtime: node
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: HOST
         value: 0.0.0.0
-      - key: PORT
-        value: 4175
       - key: DATA_DIR
         value: /opt/render/project/src/data
     disk:
