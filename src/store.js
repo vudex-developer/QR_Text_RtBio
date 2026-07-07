@@ -151,7 +151,15 @@ export function createBrowserStore() {
 }
 
 function createApiStore() {
-  const local = wrapAsyncStore(createLocalStore());
+  let localStore;
+
+  function local() {
+    if (!localStore) {
+      localStore = wrapAsyncStore(createLocalStore());
+    }
+
+    return localStore;
+  }
 
   async function request(path, options = {}) {
     const response = await fetch(path, {
@@ -181,16 +189,16 @@ function createApiStore() {
   }
 
   return {
-    list: () => withFallback(() => request("/api/records"), local.list),
+    list: () => withFallback(() => request("/api/records"), () => local().list()),
     findByCode: (code) =>
       withFallback(
         () => request(`/api/record?code=${encodeURIComponent(code)}`),
-        () => local.findByCode(code),
+        () => local().findByCode(code),
       ),
     findDuplicates: (lead) =>
       withFallback(
         () => request("/api/duplicates", { method: "POST", body: JSON.stringify(lead) }),
-        () => local.findDuplicates(lead),
+        () => local().findDuplicates(lead),
       ),
     createSubmission: (lead, answers) =>
       withFallback(
@@ -199,7 +207,7 @@ function createApiStore() {
             method: "POST",
             body: JSON.stringify({ lead, answers }),
           }),
-        () => local.createSubmission(lead, answers),
+        () => local().createSubmission(lead, answers),
       ),
     redeem: (code, redeemedBy) =>
       withFallback(
@@ -208,22 +216,22 @@ function createApiStore() {
             method: "POST",
             body: JSON.stringify({ code, redeemedBy }),
           }),
-        () => local.redeem(code, redeemedBy),
+        () => local().redeem(code, redeemedBy),
       ),
-    exportCsv: () => withFallback(() => request("/api/export.csv"), local.exportCsv),
-    loadQuestions: () => withFallback(() => request("/api/questions"), local.loadQuestions),
+    exportCsv: () => withFallback(() => request("/api/export.csv"), () => local().exportCsv()),
+    loadQuestions: () => withFallback(() => request("/api/questions"), () => local().loadQuestions()),
     saveQuestions: (questions) =>
       withFallback(
         () => request("/api/questions", { method: "PUT", body: JSON.stringify(questions) }),
-        () => local.saveQuestions(questions),
+        () => local().saveQuestions(questions),
       ),
     resetQuestions: () =>
       withFallback(
         () => request("/api/questions/reset", { method: "POST", body: "{}" }),
-        local.resetQuestions,
+        () => local().resetQuestions(),
       ),
     loadEventSettings: () =>
-      withFallback(() => request("/api/event-settings"), local.loadEventSettings),
+      withFallback(() => request("/api/event-settings"), () => local().loadEventSettings()),
     saveEventSettings: (settings) =>
       withFallback(
         () =>
@@ -231,7 +239,7 @@ function createApiStore() {
             method: "PUT",
             body: JSON.stringify(settings),
           }),
-        () => local.saveEventSettings(settings),
+        () => local().saveEventSettings(settings),
       ),
   };
 }

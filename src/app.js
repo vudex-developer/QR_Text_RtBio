@@ -23,9 +23,13 @@ let eventSettings = DEFAULT_EVENT_SETTINGS;
 window.addEventListener("hashchange", () => {
   void render();
 });
-void initialize();
+void initialize().catch((error) => {
+  console.error(error);
+  renderStartupError(error);
+});
 
 async function initialize() {
+  await render();
   surveyQuestions = await store.loadQuestions();
   eventSettings = await store.loadEventSettings();
   await render();
@@ -91,6 +95,20 @@ function renderHome() {
       <div class="qr-card" aria-label="Survey QR code">
         <img src="${qrUrl}" alt="RTBIO survey QR code" />
         <span>설문 QR</span>
+      </div>
+    </section>
+  `;
+}
+
+function renderStartupError(error) {
+  app.innerHTML = `
+    <section class="panel">
+      <h1 class="page-title">앱을 불러오지 못했습니다</h1>
+      <p class="lead">잠시 후 새로고침해 주세요. 문제가 계속되면 운영자에게 아래 메시지를 전달해 주세요.</p>
+      <div class="message error">${escapeHtml(error?.message ?? "Unknown startup error")}</div>
+      <div class="actions section">
+        <button type="button" onclick="window.location.reload()">새로고침</button>
+        <a class="button secondary" href="#/survey">설문으로 이동</a>
       </div>
     </section>
   `;
