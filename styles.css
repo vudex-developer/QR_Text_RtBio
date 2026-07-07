@@ -127,15 +127,19 @@ textarea {
 
 .qr-card {
   aspect-ratio: 1;
-  background:
-    linear-gradient(90deg, var(--text) 12px, transparent 12px) 0 0 / 32px 32px,
-    linear-gradient(var(--text) 12px, transparent 12px) 0 0 / 32px 32px,
-    var(--surface);
+  background: var(--surface);
   border: 10px solid var(--surface);
   border-radius: 8px;
   box-shadow: var(--shadow);
   display: grid;
   place-items: center;
+  position: relative;
+}
+
+.qr-card img {
+  display: block;
+  height: auto;
+  width: 100%;
 }
 
 .qr-card span {
@@ -145,6 +149,7 @@ textarea {
   color: var(--primary-strong);
   font-weight: 800;
   padding: 10px 14px;
+  position: absolute;
 }
 
 .actions {

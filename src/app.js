@@ -71,6 +71,9 @@ async function render() {
 }
 
 function renderHome() {
+  const surveyUrl = getSurveyUrl(window.location.href);
+  const qrUrl = getQrImageUrl(surveyUrl);
+
   app.innerHTML = `
     <section class="hero">
       <div>
@@ -85,8 +88,9 @@ function renderHome() {
           <a class="button secondary" href="#/staff">스태프 조회</a>
         </div>
       </div>
-      <div class="qr-card" aria-label="Printed QR concept">
-        <span>PRINT QR</span>
+      <div class="qr-card" aria-label="Survey QR code">
+        <img src="${qrUrl}" alt="RTBIO survey QR code" />
+        <span>설문 QR</span>
       </div>
     </section>
   `;
